@@ -10,7 +10,7 @@ from utils.score import get_score_from_stat
 import sys
 import os
 
-def run(checkin_path, dataset_type):
+def get_statistics(checkin_path, dataset_type):
     data = None
     stat_path = file.get_stat_path(checkin_path)
     statistics = get_stat_from_file(stat_path)
@@ -36,8 +36,8 @@ def run(checkin_path, dataset_type):
 def get_score(pol_path):
     log_file = "results_score.log.txt"
     try:
-        geolife_stat = run(file.get_geolife_path(), "geolife")
-        pol_stat = run(pol_path, "pol")
+        geolife_stat = get_statistics(file.get_geolife_path(), "geolife")
+        pol_stat = get_statistics(pol_path, "pol")
         score, scaled_score = get_score_from_stat(geolife_stat, pol_stat, normalize=geolife_stat)
         file.log_print(f"{pol_path} : {(score, scaled_score)}", log_file)
         

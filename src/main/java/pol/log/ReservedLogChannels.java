@@ -180,9 +180,6 @@ public class ReservedLogChannels implements Serializable {
 			instance.putIfAbsent(Level.getLevel("AGENT5"), new Setting("Checkin", "Checkin", "RollingFile"));
 			instance.putIfAbsent(Level.getLevel("AGENT6"),
 					new Setting("SocialNetwork", "SocialNetwork", "RollingFile"));
-		} else if (whatTest != null && whatTest.equals("c02")) {
-			instance.putIfAbsent(Level.getLevel("AGENT5"), new Setting("Checkin", "Checkin", "RollingFile"));
-			instance.putIfAbsent(Level.getLevel("AGENT"), new Setting("AgentStateTable", "AgentStates", "RollingFile"));
 		}
 		return instance;
 	}
