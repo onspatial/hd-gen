@@ -1,7 +1,7 @@
 import os
 import sys
 import json
-from data_generation.scorer import get_statistics
+from scorer import get_statistics
 
 
 def get_children(parent="worlds"):
@@ -52,15 +52,33 @@ def save_json(json_data, file_path):
     with open(file_path, "w") as json_file:
         json.dump(json_data, json_file, indent=4)
 
+
 def get_statistics_added(properties_json, folder):
-    checkin_path = os.path.join(folder, "checkins.txt")
+    checkin_path = os.path.join(folder, "logs/logs/Checkin.tsv")
     statistics = get_statistics(checkin_path, "pol")
     for key, value in statistics.items():
         properties_json[key] = value
     return properties_json
 
+
 if __name__ == "__main__":
-    sub_folders = get_children(parent="/home/amiri/onone/ondell/Research/vanilla-analysis/worlds")
+    sub_folders = get_children(parent="../vanilla-analysis/worlds")
+    print(f"Found {len(sub_folders)} sub-folders to process...\n")
+    for folder in sub_folders:
+        print(f"Copying files from folder: {folder}", end="\r")
+        os.makedirs(os.path.join("worlds", os.path.basename(folder)), exist_ok=True)
+        os.makedirs(os.path.join("worlds", os.path.basename(folder), "logs", "logs"), exist_ok=True)
+        os.system(f"cp {os.path.join(folder, 'logs.txt')} {os.path.join('worlds', os.path.basename(folder))}")
+        os.system(f"cp {os.path.join(folder, 'parameters.properties')} {os.path.join('worlds', os.path.basename(folder))}")
+        os.system(f"cp {os.path.join(folder, 'logs/logs/Checkin.tsv')} {os.path.join('worlds', os.path.basename(folder), 'logs/logs')}")
+        os.system(f"cp {os.path.join(folder, 'logs/logs/pattenrs_of_life.log')} {os.path.join('worlds', os.path.basename(folder), 'logs/logs')}")
+        # testing if the files are copied correctly
+        os.system(f"diff {os.path.join(folder, 'logs.txt')} {os.path.join('worlds', os.path.basename(folder), 'logs.txt')}")
+        os.system(f"diff {os.path.join(folder, 'parameters.properties')} {os.path.join('worlds', os.path.basename(folder), 'parameters.properties')}")
+        os.system(f"diff {os.path.join(folder, 'logs/logs/Checkin.tsv')} {os.path.join('worlds', os.path.basename(folder), 'logs/logs/Checkin.tsv')}")
+        os.system(f"diff {os.path.join(folder, 'logs/logs/pattenrs_of_life.log')} {os.path.join('worlds', os.path.basename(folder), 'logs/logs/pattenrs_of_life.log')}")
+    exit()
+    sub_folders = get_children(parent="worlds")
     all_properties = []
     for folder in sub_folders:
         print(f"Processing folder: {folder}")
@@ -70,6 +88,7 @@ if __name__ == "__main__":
         properties_json["simulation_time_ms"] = simulation_time
         properties_json["folder"] = folder
         properties_json = get_statistics_added(properties_json, folder)
+        print(f"Properties for folder {folder}: {properties_json}")
         all_properties.append(properties_json)
 
     save_json(all_properties, "all_properties.json")

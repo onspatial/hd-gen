@@ -6,3 +6,5 @@ src/main/python/pol/maps/*
 target/*
 src/main/python/tmp/*
 src/main/python/trash/*
+stat.json
+worlds
