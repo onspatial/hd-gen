@@ -1,0 +1,17 @@
+Dataset: per50wt
+Rows read: 308,901
+
+Figures:
+- 01_final_weight_distributions.png
+- 02_replicate_mean_stability.png
+- 03_replicate_variability.png
+- 04_person_variability_by_decile.png
+- 05_person_vs_day_variability.png
+- 06_person_ratio_envelope.png
+- 07_self_ratio_envelope.png
+- 08_day_ratio_envelope.png
+
+Notes:
+- The file contains three families of final and 100 replicate weights: person, self, and day.
+- Replicate-weight plots diagnose stability and record-level variation; formal survey variance estimates require the survey's replicate-weight method.
+- Polars is used to keep this very wide 838 MB CSV fast and memory-efficient.

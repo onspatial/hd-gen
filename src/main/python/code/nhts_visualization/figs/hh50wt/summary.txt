@@ -1,0 +1,15 @@
+Dataset: hh50wt
+Rows read: 150,147
+
+Figures:
+- 01_final_weight_distribution.png
+- 02_replicate_mean_stability.png
+- 03_household_replicate_cv.png
+- 04_variability_by_weight_decile.png
+- 05_weight_vs_variability.png
+- 06_replicate_ratio_range.png
+- 07_replicate_ratio_envelope.png
+
+Notes:
+- Detected 100 replicate-weight columns.
+- Plots focus on stability and household-level variability; replicate weights are intended for variance estimation.

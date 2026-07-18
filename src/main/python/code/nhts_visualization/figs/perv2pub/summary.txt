@@ -1,0 +1,17 @@
+Dataset: PERV2PUB
+Rows read: 308,901
+
+Figures:
+- 01_age_distribution.png
+- 02_sex_by_age.png
+- 03_worker_driver_by_age.png
+- 04_commute_mode_share.png
+- 05_commute_mode_urban_rural.png
+- 06_commute_distance_time.png
+- 07_trips_by_age.png
+- 08_walk_bike_by_age.png
+- 09_annual_miles_by_age.png
+
+Notes:
+- Survey weights use WTPERFIN.
+- Commute plots exclude skip, unknown, and implausible values.

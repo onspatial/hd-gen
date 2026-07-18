@@ -1,0 +1,18 @@
+Dataset: DAYV2PUB
+Rows read: 1,167,321
+
+Figures:
+- 01_origin_destination_purpose_flow.png
+- 02_trip_purpose_share.png
+- 03_mode_share.png
+- 04_mode_by_purpose.png
+- 05_departure_time_by_purpose.png
+- 06_distance_duration_by_purpose.png
+- 07_distance_distribution_by_mode.png
+- 08_weighted_trip_volume_by_state.png
+- 09_distance_by_age.png
+
+Notes:
+- Survey weights use WTTRDFIN.
+- Origin and destination are activity-purpose categories because public-use data do not contain trip coordinates.
+- The file is processed in chunks to keep memory use bounded.

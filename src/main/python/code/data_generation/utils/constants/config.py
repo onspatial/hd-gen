@@ -62,7 +62,7 @@ def get_project_path():
     project_path = current_path.split("/code")[0]
     return project_path
 
-def get_bounding_box(city="bjng"):
+def get_bounding_box(city="world"):
     import utils.constants.bounding_box as bounding_box
     if city == "bjng":
         return bounding_box.bjng

@@ -1,0 +1,16 @@
+Dataset: CHNTRP09
+Rows read: 1,164,977
+
+Figures:
+- 01_anchor_flow.png
+- 02_tour_type_share.png
+- 03_trips_per_tour.png
+- 04_stops_distribution.png
+- 05_tour_flag_share.png
+- 06_segment_position.png
+- 07_tour_complexity_by_type.png
+- 08_tours_and_trips_per_person.png
+
+Notes:
+- Survey weights use WTTRDFIN.
+- Tour types use H=Home, W=Work, and O=Other anchors.

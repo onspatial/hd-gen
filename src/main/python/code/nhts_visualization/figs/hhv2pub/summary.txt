@@ -1,0 +1,16 @@
+Dataset: HHV2PUB
+Rows read: 150,147
+
+Figures:
+- 01_household_size.png
+- 02_vehicle_count.png
+- 03_income_distribution.png
+- 04_vehicles_by_income.png
+- 05_lifecycle.png
+- 06_urban_rural.png
+- 07_trips_by_household_and_vehicle_size.png
+- 08_vehicles_per_driver.png
+- 09_households_by_state.png
+
+Notes:
+- Survey weights use WTHHFIN.

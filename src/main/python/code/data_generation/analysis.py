@@ -2,6 +2,7 @@ import os
 import sys
 import json
 from scorer import get_statistics
+from concurrent.futures import ProcessPoolExecutor
 
 
 def get_children(parent="worlds"):
@@ -9,9 +10,10 @@ def get_children(parent="worlds"):
     sub_folders = []
     for item in os.listdir(parent):
         item_path = os.path.join(parent, item)
+        print(f"Checking item: {item_path}", end=" ")
         if os.path.isdir(item_path):
             sub_folders.append(item_path)
-
+    
     return sub_folders
 
 
@@ -52,6 +54,9 @@ def save_json(json_data, file_path):
     with open(file_path, "w") as json_file:
         json.dump(json_data, json_file, indent=4)
 
+def load_json(file_path):
+    with open(file_path, "r") as json_file:
+        return json.load(json_file)
 
 def get_statistics_added(properties_json, folder):
     checkin_path = os.path.join(folder, "logs/logs/Checkin.tsv")
@@ -61,7 +66,7 @@ def get_statistics_added(properties_json, folder):
     return properties_json
 
 
-if __name__ == "__main__":
+def copy_necessary_files():
     sub_folders = get_children(parent="../vanilla-analysis/worlds")
     print(f"Found {len(sub_folders)} sub-folders to process...\n")
     for folder in sub_folders:
@@ -77,18 +82,30 @@ if __name__ == "__main__":
         os.system(f"diff {os.path.join(folder, 'parameters.properties')} {os.path.join('worlds', os.path.basename(folder), 'parameters.properties')}")
         os.system(f"diff {os.path.join(folder, 'logs/logs/Checkin.tsv')} {os.path.join('worlds', os.path.basename(folder), 'logs/logs/Checkin.tsv')}")
         os.system(f"diff {os.path.join(folder, 'logs/logs/pattenrs_of_life.log')} {os.path.join('worlds', os.path.basename(folder), 'logs/logs/pattenrs_of_life.log')}")
-    exit()
-    sub_folders = get_children(parent="worlds")
-    all_properties = []
-    for folder in sub_folders:
-        print(f"Processing folder: {folder}")
-        properties_json = get_properties_from_file(folder)
-        initilization_time, simulation_time = get_time_from_log(folder)
-        properties_json["initilization_time_ms"] = initilization_time
-        properties_json["simulation_time_ms"] = simulation_time
-        properties_json["folder"] = folder
-        properties_json = get_statistics_added(properties_json, folder)
-        print(f"Properties for folder {folder}: {properties_json}")
-        all_properties.append(properties_json)
 
-    save_json(all_properties, "all_properties.json")
+def processing_one_folder(folder):
+    properties_json = get_properties_from_file(folder)
+    initilization_time, simulation_time = get_time_from_log(folder)
+    properties_json["initilization_time_ms"] = initilization_time
+    properties_json["simulation_time_ms"] = simulation_time
+    properties_json["folder"] = folder
+    properties_json = get_statistics_added(properties_json, folder)
+    return properties_json
+def get_all_properties(sub_folders, save_path="all_properties.json"):
+    if os.path.exists(save_path):
+        print(f"Loading properties from {save_path}...")
+        return load_json(save_path)
+
+    with ProcessPoolExecutor() as executor:
+        all_properties = list(
+            executor.map(processing_one_folder, sub_folders)
+        )
+    save_json(all_properties, save_path)
+    return all_properties
+
+if __name__ == "__main__":
+    # copy_necessary_files()
+    sub_folders = get_children(parent="worlds")
+    
+
+   

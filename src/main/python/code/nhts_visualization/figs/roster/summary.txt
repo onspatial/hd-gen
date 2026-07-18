@@ -1,0 +1,17 @@
+Dataset: pvarpub roster
+Rows read: 150,147
+
+Figures:
+- 01_household_size.png
+- 02_age_distribution.png
+- 03_age_pyramid.png
+- 04_relationships.png
+- 05_driver_rate_by_age_sex.png
+- 06_worker_rate_by_age.png
+- 07_interview_status.png
+- 08_completion_by_roster_position.png
+- 09_self_vs_proxy.png
+
+Notes:
+- Reshaped 351,190 valid household-member records from 14 roster slots.
+- The roster file has no survey weight, so these plots show unweighted sample counts and rates.

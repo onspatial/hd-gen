@@ -24,9 +24,7 @@ def get_statistics(checkin_path, dataset_type):
     else:
         print("Dataset type not supported")
         return
-    
     statistics = stat.get_stat(data)
-    print(statistics)
     if not file.exists(stat_path):
         save_stat_to_file(statistics, stat_path)
 

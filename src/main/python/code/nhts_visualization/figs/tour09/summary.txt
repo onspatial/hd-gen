@@ -1,0 +1,19 @@
+Dataset: TOUR09
+Rows read: 831,317
+
+Figures:
+- 01_tour_anchor_flow.png
+- 02_tour_type_share.png
+- 03_start_time_by_tour_type.png
+- 04_longest_segment_mode.png
+- 05_distance_time_by_tour_type.png
+- 06_distance_vs_time.png
+- 07_distance_time_by_stops.png
+- 08_pmt_composition.png
+- 09_dwell_time_by_tour_type.png
+- 10_tours_per_person.png
+
+Notes:
+- Survey weights use WTTRDFIN.
+- Tour types use H=Home, W=Work, and O=Other anchors.
+- Distance/time plots exclude invalid or extreme values for legibility.
