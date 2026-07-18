@@ -89,6 +89,7 @@ def processing_one_folder(folder):
     properties_json["initilization_time_ms"] = initilization_time
     properties_json["simulation_time_ms"] = simulation_time
     properties_json["folder"] = folder
+    properties_json["parent_id"] = f"{folder.split("/")[-1].split("_")[0]}_{folder.split("/")[-1].split("_")[-1]}"
     properties_json = get_statistics_added(properties_json, folder)
     return properties_json
 def get_all_properties(sub_folders, save_path="all_properties.json"):
@@ -106,6 +107,6 @@ def get_all_properties(sub_folders, save_path="all_properties.json"):
 if __name__ == "__main__":
     # copy_necessary_files()
     sub_folders = get_children(parent="worlds")
-    
+    get_all_properties(sub_folders, save_path="all_properties2.json")
 
    
