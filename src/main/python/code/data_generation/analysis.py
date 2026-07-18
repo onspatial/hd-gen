@@ -36,6 +36,17 @@ def get_float(value):
         print(f"Error converting value to float: {value}")
         return None
 
+def get_time_from_line(line):
+    extracted_time = None
+    if line.strip().endswith("ms"):
+        extracted_time = get_float(line.split(":")[1].split("ms")[0].strip())
+    elif line.strip().endswith("s"):
+        extracted_time = get_float(line.split(":")[1].split("s")[0].strip()) * 1000
+    elif line.strip().endswith("min"):
+        extracted_time = get_float(line.split(":")[1].split("min")[0].strip()) * 60 * 1000
+    elif line.strip().endswith("hour"):
+        extracted_time = get_float(line.split(":")[1].split("hour")[0].strip()) * 60 * 60 * 1000
+    return extracted_time
 
 def get_time_from_log(folder):
     log_file = os.path.join(folder, "logs.txt")
@@ -44,9 +55,9 @@ def get_time_from_log(folder):
     with open(log_file, "r") as file:
         for line in file:
             if "initialize time:" in line:
-                initilization_time = get_float(line.split(":")[1].split("ms")[0].strip())
+                initilization_time = get_time_from_line(line)
             elif "Total simulation time:" in line:
-                simulation_time = get_float(line.split(":")[1].split("ms")[0].strip())
+                simulation_time = get_time_from_line(line)
     return initilization_time, simulation_time
 
 
@@ -82,16 +93,19 @@ def copy_necessary_files():
         os.system(f"diff {os.path.join(folder, 'parameters.properties')} {os.path.join('worlds', os.path.basename(folder), 'parameters.properties')}")
         os.system(f"diff {os.path.join(folder, 'logs/logs/Checkin.tsv')} {os.path.join('worlds', os.path.basename(folder), 'logs/logs/Checkin.tsv')}")
         os.system(f"diff {os.path.join(folder, 'logs/logs/pattenrs_of_life.log')} {os.path.join('worlds', os.path.basename(folder), 'logs/logs/pattenrs_of_life.log')}")
+        print(f"Files copied from folder: {folder}")
 
 def processing_one_folder(folder):
+    print(f"Processing folder: {folder}")
     properties_json = get_properties_from_file(folder)
     initilization_time, simulation_time = get_time_from_log(folder)
     properties_json["initilization_time_ms"] = initilization_time
     properties_json["simulation_time_ms"] = simulation_time
     properties_json["folder"] = folder
-    properties_json["parent_id"] = f"{folder.split("/")[-1].split("_")[0]}_{folder.split("/")[-1].split("_")[-1]}"
+    properties_json["parent_id"] = f'{folder.split("/")[-1].split("_")[0]}_{folder.split("/")[-1].split("_")[-1]}'
     properties_json = get_statistics_added(properties_json, folder)
     return properties_json
+
 def get_all_properties(sub_folders, save_path="all_properties.json"):
     if os.path.exists(save_path):
         print(f"Loading properties from {save_path}...")
@@ -106,7 +120,7 @@ def get_all_properties(sub_folders, save_path="all_properties.json"):
 
 if __name__ == "__main__":
     # copy_necessary_files()
-    sub_folders = get_children(parent="worlds")
-    get_all_properties(sub_folders, save_path="all_properties2.json")
+    sub_folders = get_children(parent="/scratch/hamiri/vanilla-analysis/worlds")
+    get_all_properties(sub_folders, save_path="all_properties_hdgen_aws.json")
 
    

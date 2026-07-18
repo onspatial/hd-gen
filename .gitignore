@@ -9,3 +9,4 @@ src/main/python/trash/*
 stat.json
 worlds
 src/main/python/code/visualization/.mplconfig/*
+.venv/*
