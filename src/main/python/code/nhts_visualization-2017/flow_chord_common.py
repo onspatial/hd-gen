@@ -29,7 +29,7 @@ plt.rcParams.update({
     "axes.labelsize": 10,
 })
 
-COMPARABLE_ORDER = ["Home", "Work", "Restaurant", "Recreation"]
+COMPARABLE_ORDER = ["Home", "Work", "Restaurant", "Recreation", "Other"]
 COMPARABLE_COLORS = {
     "Home": "#1f77b4",
     "Work": "#f2a65a",

@@ -30,6 +30,10 @@ plt.rcParams.update({
 })
 
 ACTIVITY_ORDER = ["Home", "Work", "Restaurant", "Recreation"]
+ACTIVITY_COLORS = {
+    "Home": "#1f77b4", "Work": "#ff7f0e", "Restaurant": "#2ca02c", "Recreation": "#d62728",
+}
+
 PLACE_MAP = {
     "AtHome": "Home", "Apartment": "Home",
     "AtWork": "Work", "Workplace": "Work",
@@ -130,8 +134,7 @@ def activity_label(s: pd.Series) -> pd.Series:
 def line_plot(series: pd.Series, title: str, ylabel: str, out: Path, name: str, xlabel: str = "") -> str:
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.plot(series.index, series.values, marker="o", markersize=3)
-   #  ax.set_title(title); 
-    ax.set_xlabel(xlabel); ax.set_ylabel(ylabel); ax.grid(alpha=0.25)
+   #  ax.set_title(title); ax.set_xlabel(xlabel); ax.set_ylabel(ylabel); ax.grid(alpha=0.25)
     if len(series) > 12:
         ax.tick_params(axis="x", rotation=35)
     return savefig(fig, out, name)
@@ -152,8 +155,7 @@ def bar_plot(series: pd.Series, title: str, ylabel: str, out: Path, name: str, h
         ax.bar(s.index.astype(str), s.values)
         ax.set_ylabel(ylabel)
         ax.tick_params(axis="x", rotation=35)
-   #  ax.set_title(title); 
-    ax.grid(axis="x" if horizontal else "y", alpha=0.25)
+   #  ax.set_title(title); ax.grid(axis="x" if horizontal else "y", alpha=0.25)
     return savefig(fig, out, name)
 
 
@@ -165,8 +167,7 @@ def heatmap(table: pd.DataFrame, title: str, out: Path, name: str, xlabel: str =
     im = ax.imshow(a, aspect="auto", cmap="viridis")
     ax.set_xticks(range(len(table.columns)), table.columns.astype(str), rotation=45, ha="right")
     ax.set_yticks(range(len(table.index)), table.index.astype(str))
-   #  ax.set_title(title); 
-    ax.set_xlabel(xlabel); ax.set_ylabel(ylabel)
+   #  ax.set_title(title); ax.set_xlabel(xlabel); ax.set_ylabel(ylabel)
     fig.colorbar(im, ax=ax, shrink=0.8)
     if a.size <= 120 and np.isfinite(a).any():
         threshold = np.nanmax(a) * 0.55
@@ -186,8 +187,7 @@ def histogram(values: pd.Series | np.ndarray, title: str, xlabel: str, out: Path
     ax.hist(a, bins=bins)
     if logx:
         ax.set_xscale("log")
-   #  ax.set_title(title); 
-    ax.set_xlabel(xlabel); ax.set_ylabel("Records"); ax.grid(axis="y", alpha=0.25)
+   #  ax.set_title(title); ax.set_xlabel(xlabel); ax.set_ylabel("Records"); ax.grid(axis="y", alpha=0.25)
     return savefig(fig, out, name)
 
 
@@ -251,7 +251,24 @@ def analyze_agent_characteristics(path: Path, out: Path, **_: object) -> None:
     df = clean_columns(pd.read_csv(path, sep="\t"))
     figs: list[str] = []
     figs.append(bar_plot(df["family:numberOfPeople"].value_counts().sort_index(), "Household size assigned to agents", "Agents", out, "01_family_size.png"))
+    education_cencus =  {
+      "Low": 10.8,
+      "HighSchoolOrCollege": 54.3,
+      "Bachelors": 21.2,
+      "Graduate": 13.7
+    }
+    figs.append(bar_plot(pd.Series(education_cencus), "Education distribution (Census)", "Percent", out, "02_education_census.png", horizontal=True))
     figs.append(bar_plot(df["educationLevel"].value_counts(), "Education distribution", "Agents", out, "02_education.png", horizontal=True, percent=True))
+    
+    education_simulation = df["educationLevel"].value_counts().to_dict()
+    # make it percent
+    total = sum(education_simulation.values())
+    education_simulation = {k: round(v / total * 100, 4) for k, v in education_simulation.items()}
+    both = {k: (education_simulation.get(k, 0), education_cencus.get(k, 0)) for k in set(education_simulation) | set(education_cencus)}
+
+
+
+
     figs.append(bar_plot(df["interest"].value_counts().sort_index(), "Primary interest distribution", "Agents", out, "03_interest.png", percent=True))
     figs.append(histogram(df["joviality"], "Joviality distribution", "Joviality", out, "04_joviality.png"))
     j = df.groupby("educationLevel")["joviality"].mean().sort_values()
@@ -494,8 +511,8 @@ def analyze_travel_journal(path: Path, out: Path, warmup_days: int = 30, data_ro
     hp = hour_dest.div(hour_dest.sum(axis=0).replace(0, np.nan), axis=1) * 100
     fig, ax = plt.subplots(figsize=(11, 6))
     for c in hp.columns:
-        ax.plot(hp.index, hp[c], marker="o", markersize=3, label=c)
-   #  ax.set_title("Trip start time by destination"); ax.set_xlabel("Hour"); ax.set_ylabel("Share within destination (%)"); ax.grid(alpha=.25); ax.legend()
+        ax.plot(hp.index, hp[c], marker="o", markersize=3, label=c, color=ACTIVITY_COLORS.get(c, None))
+    ax.set_title(""); ax.set_xlabel("Hour of day"); ax.set_ylabel("Purpose of Daily Trips (%)"); ax.grid(alpha=.25); ax.legend()
     figs.append(savefig(fig, out, "04_departure_time_by_destination.png"))
 
     if daily_agent_frames:
@@ -518,6 +535,7 @@ def analyze_travel_journal(path: Path, out: Path, warmup_days: int = 30, data_ro
         figs.append(bar_plot(mean_dist_dest.reindex(ACTIVITY_ORDER).dropna(), "Mean straight-line distance by destination", "Miles", out, "10_distance_by_destination.png"))
 
     ref = load_reference().get(reference_region, {})
+    reference_year = int(ref.get("survey_year", 2017)) if ref else 2017
     sim_share = dest_series / max(dest_series.sum(), 1) * 100
     sim_trips = rows / (max(len(agents), 1) * max(len(dates), 1))
     mean_trip_minutes = duration_total / max(duration_n, 1)
@@ -525,8 +543,8 @@ def analyze_travel_journal(path: Path, out: Path, warmup_days: int = 30, data_ro
     
     if ref:
         real = pd.Series(ref["destination_share_pct"]).reindex(ACTIVITY_ORDER)
-        comp = pd.DataFrame({"Simulation": sim_share, "NHTS": real})
-        fig, ax = plt.subplots(figsize=(10, 5)); comp.plot(kind="bar", ax=ax);#  ax.set_title(f"Destination share: simulation vs 2009 NHTS ({reference_region.title()})"); ax.set_ylabel("Trips (%)"); ax.tick_params(axis="x", rotation=25); ax.grid(axis="y", alpha=.25)
+        comp = pd.DataFrame({"Simulation": sim_share, f"NHTS {reference_year}": real})
+        fig, ax = plt.subplots(figsize=(10, 5)); comp.plot(kind="bar", ax=ax);#  ax.set_title(f"Destination share: simulation vs {reference_year} NHTS ({reference_region.title()})"); ax.set_ylabel("Trips (%)"); ax.tick_params(axis="x", rotation=25); ax.grid(axis="y", alpha=.25)
         figs.append(savefig(fig, out, "11_destination_share_vs_nhts.png"))
         sim_global = od / max(od.to_numpy().sum(), 1) * 100
         real_od = pd.DataFrame(0.0, index=ACTIVITY_ORDER, columns=ACTIVITY_ORDER)
@@ -536,21 +554,23 @@ def analyze_travel_journal(path: Path, out: Path, warmup_days: int = 30, data_ro
         figs.append(heatmap(sim_global - real_od, "Simulation minus NHTS origin-destination share (percentage points)", out, "12_od_difference_vs_nhts.png", "Destination", "Origin", "+.1f"))
         sim_h = pd.Series(hour_counts, dtype=float).reindex(range(24), fill_value=0); sim_h = sim_h / max(sim_h.sum(), 1) * 100
         real_h = pd.Series({int(k): v for k, v in ref["departure_hour_share_pct"].items()}).reindex(range(24), fill_value=0)
-        fig, ax = plt.subplots(figsize=(10, 5)); ax.plot(sim_h.index, sim_h, label="Simulation", marker="o"); ax.plot(real_h.index, real_h, label="NHTS", marker="o");#  ax.set_title("Departure-time profile vs NHTS"); ax.set_xlabel("Hour"); ax.set_ylabel("Trips (%)"); ax.legend(); ax.grid(alpha=.25)
+        fig, ax = plt.subplots(figsize=(10, 5)); ax.plot(sim_h.index, sim_h, label="Simulation", marker="o"); ax.plot(real_h.index, real_h, label=f"NHTS {reference_year}", marker="o");#  ax.set_title("Departure-time profile vs NHTS"); ax.set_xlabel("Hour"); ax.set_ylabel("Trips (%)"); ax.legend(); ax.grid(alpha=.25)
         figs.append(savefig(fig, out, "13_departure_time_vs_nhts.png"))
         benchmark = pd.Series({"Trips/person-day": sim_trips, "Mean trip minutes": mean_trip_minutes, "Mean trip miles": mean_trip_miles})
         real_benchmark = pd.Series({"Trips/person-day": ref.get("weighted_trips_per_person_day", np.nan), "Mean trip minutes": ref.get("mean_trip_minutes", np.nan), "Mean trip miles": ref.get("mean_trip_miles", np.nan)})
         ratio = (benchmark / real_benchmark * 100).dropna()
-        figs.append(bar_plot(ratio, "Simulation level relative to NHTS benchmark", "NHTS = 100", out, "14_level_relative_to_nhts.png"))
+        figs.append(bar_plot(ratio, f"Simulation level relative to {reference_year} NHTS benchmark", f"{reference_year} NHTS = 100", out, "14_level_relative_to_nhts.png"))
+   
+        
 
     insights = [
         f"The simulation produces {sim_trips:.2f} trips per agent-day when all agents and analyzed dates are used as the denominator.",
         f"Restaurants account for {sim_share.get('Restaurant', 0):.1f}% of simulated destinations and recreation accounts for {sim_share.get('Recreation', 0):.1f}%.",
-        f"Mean simulated travel time is {mean_trip_minutes:.1f} minutes; the NHTS {reference_region} mean benchmark is {ref.get('mean_trip_minutes', float('nan')):.1f} minutes." if ref else "Trip-duration comparison was unavailable because no reference file was found.",
+        f"Mean simulated travel time is {mean_trip_minutes:.1f} minutes; the {reference_year} NHTS {reference_region} mean benchmark is {ref.get('mean_trip_minutes', float('nan')):.1f} minutes." if ref else "Trip-duration comparison was unavailable because no reference file was found.",
         "The simulation has no shopping, school, medical, or escort activity classes, so NHTS 'Other' should be treated as a structural gap rather than a calibration failure.",
     ]
     if distance_total_n and ref:
-        insights.append(f"Mean straight-line distance is {mean_trip_miles:.2f} miles versus {ref['mean_trip_miles']:.2f} NHTS trip miles; straight-line distance is expected to be lower than network distance.")
+        insights.append(f"Mean straight-line distance is {mean_trip_miles:.2f} miles versus {ref['mean_trip_miles']:.2f} miles in the {reference_year} NHTS; straight-line distance is expected to be lower than network distance.")
     write_dataset_summary(out, path.name, figs, insights, {**meta, "rows": rows, "reference_region": reference_region,
                                                           "sample_rows": len(sample), "unique_agents": len(agents), "unique_dates": len(dates)})
 
@@ -583,7 +603,9 @@ def analyze_checkin(path: Path, out: Path, warmup_days: int = 30, reference_regi
         sim=(df.activity.value_counts(normalize=True)*100).reindex(ACTIVITY_ORDER).fillna(0)
         real=pd.Series(ref['destination_share_pct']).reindex(ACTIVITY_ORDER)
         comp=pd.DataFrame({'Simulation check-ins':sim,'NHTS trip destinations':real})
-        fig,ax=plt.subplots(figsize=(10,5)); comp.plot(kind='bar',ax=ax);#  ax.set_title('Check-in activity mix vs NHTS destination mix'); ax.set_ylabel('Percent'); ax.tick_params(axis='x',rotation=25); ax.grid(axis='y',alpha=.25)
+        fig,ax=plt.subplots(figsize=(10,5)); comp.plot(kind='bar',ax=ax);
+        #  ax.set_title('Check-in activity mix vs NHTS destination mix'); 
+        ax.set_ylabel('Percent'); ax.tick_params(axis='x',rotation=25); ax.grid(axis='y',alpha=.25)
         figs.append(savefig(fig,out,'09_activity_share_vs_nhts.png'))
     top_share=df.VenueId.value_counts(normalize=True).head(10).sum()*100
     insights=[

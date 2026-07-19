@@ -19,6 +19,17 @@ PURPOSE_ORDER = [
     "Home", "Work", "School/daycare/religious", "Medical/dental",
     "Shopping/errands", "Social/recreational", "Transport someone", "Meals", "Other",
 ]
+ACTIVITY_COLORS = {
+    "Home": "#1f77b4",
+    "Work": "#ff7f0e",
+    "School/daycare/religious": "#7f7f7f",
+    "Medical/dental": "#8c564b",
+    "Shopping/errands": "#9467bd",
+    "Social/recreational": "#d62728",
+    "Transport someone": "#e377c2",
+    "Meals": "#2ca02c",
+    "Other": "#bcbd22",
+}
 AGE_ORDER = ["0-4", "5-15", "16-24", "25-34", "35-44", "45-54", "55-64", "65-74", "75-89", "90+"]
 MAJOR_MODES = ["Car", "SUV", "Pickup truck", "Public / commuter bus", "Bicycle", "Walk"]
 
@@ -154,10 +165,10 @@ def main() -> None:
     hourly = hourly.div(hourly.sum(axis=0).replace(0, np.nan), axis=1) * 100
     fig, ax = plt.subplots(figsize=(11, 6))
     for column in hourly.columns:
-        ax.plot(hourly.index, hourly[column], marker="o", markersize=3, label=column)
-    ax.set_title("Trip departure time by purpose")
+        ax.plot(hourly.index, hourly[column], marker="o", markersize=3, label=column, color=ACTIVITY_COLORS.get(column, None))
+    # ax.set_title("Trip departure time by purpose")
     ax.set_xlabel("Hour of day")
-    ax.set_ylabel("Percent of each purpose's daily trips")
+    ax.set_ylabel("Purpose of Daily Trips (%)")
     ax.set_xticks(range(0, 24, 2))
     ax.grid(alpha=0.25)
     ax.legend(ncol=2)
