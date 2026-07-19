@@ -1,0 +1,20 @@
+Dataset: VEHPUB
+Survey year: 2017
+Rows read: 256,115
+
+Figures:
+- 01_vehicle_type_share.png
+- 02_vehicle_age.png
+- 03_fuel_type.png
+- 04_annual_miles_by_vehicle_type.png
+- 05_mpg_by_vehicle_type.png
+- 06_fuel_cost_by_vehicle_type.png
+- 07_vehicle_age_vs_miles.png
+- 08_type_by_fleet_size.png
+- 09_mpg_by_vehicle_age.png
+
+Notes:
+- Survey weights use household weight WTHHFIN, as supplied on the vehicle file.
+- Annual mileage uses the 2017 BESTMILE estimate.
+- Fuel economy uses the 2017 FEGEMPG field.
+- Invalid and extreme engineering values are removed before averages.

@@ -1,0 +1,19 @@
+Dataset: PERPUB
+Survey year: 2017
+Rows read: 264,234
+
+Figures:
+- 01_age_distribution.png
+- 02_sex_by_age.png
+- 03_worker_driver_by_age.png
+- 04_commute_mode_share.png
+- 05_commute_mode_urban_rural.png
+- 06_commute_distance_time.png
+- 07_trips_by_age.png
+- 08_walk_bike_by_age.png
+- 09_annual_miles_by_age.png
+
+Notes:
+- Survey weights use WTPERFIN.
+- Commute distance uses the 2017 DISTTOWK17 road-network field.
+- Commute plots exclude skip, unknown, and implausible values.

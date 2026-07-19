@@ -1,0 +1,20 @@
+Dataset: TRIPPUB
+Survey year: 2017
+Rows read: 923,572
+
+Figures:
+- 01_origin_destination_purpose_flow.png
+- 02_trip_purpose_share.png
+- 03_mode_share.png
+- 04_mode_by_purpose.png
+- 05_departure_time_by_purpose.png
+- 06_distance_duration_by_purpose.png
+- 07_distance_distribution_by_mode.png
+- 08_weighted_trip_volume_by_state.png
+- 09_distance_by_age.png
+
+Notes:
+- Survey weights use WTTRDFIN.
+- Trip duration uses the 2017 TRVLCMIN field.
+- WHYFROM and WHYTO use the detailed 2017 activity-purpose codes.
+- The file is processed in chunks to keep memory use bounded.

@@ -38,4 +38,6 @@ def main():
     if failed:
         raise SystemExit(f"{len(failed)} datasets failed; see run_status.json")
 
-if __name__=="__main__": main()
+if __name__=="__main__": 
+    
+    main()
