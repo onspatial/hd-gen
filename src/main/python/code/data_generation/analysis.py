@@ -96,15 +96,19 @@ def copy_necessary_files():
         print(f"Files copied from folder: {folder}")
 
 def processing_one_folder(folder):
-    print(f"Processing folder: {folder}")
-    properties_json = get_properties_from_file(folder)
-    initilization_time, simulation_time = get_time_from_log(folder)
-    properties_json["initilization_time_ms"] = initilization_time
-    properties_json["simulation_time_ms"] = simulation_time
-    properties_json["folder"] = folder
-    properties_json["parent_id"] = f'{folder.split("/")[-1].split("_")[0]}_{folder.split("/")[-1].split("_")[-1]}'
-    properties_json = get_statistics_added(properties_json, folder)
-    return properties_json
+    try:
+        print(f"Processing folder: {folder}")
+        properties_json = get_properties_from_file(folder)
+        initilization_time, simulation_time = get_time_from_log(folder)
+        properties_json["initilization_time_ms"] = initilization_time
+        properties_json["simulation_time_ms"] = simulation_time
+        properties_json["folder"] = folder
+        properties_json["parent_id"] = f'{folder.split("/")[-1].split("_")[0]}_{folder.split("/")[-1].split("_")[-1]}'
+        properties_json = get_statistics_added(properties_json, folder)
+        return properties_json
+    except Exception as e:
+        print(f"Error processing folder: {folder} - {e}")
+        return {"folder": folder, "error": str(e)}
 
 def get_all_properties(sub_folders, save_path="all_properties.json"):
     if os.path.exists(save_path):
@@ -120,7 +124,7 @@ def get_all_properties(sub_folders, save_path="all_properties.json"):
 
 if __name__ == "__main__":
     # copy_necessary_files()
-    sub_folders = get_children(parent="/scratch/hamiri/vanilla-analysis/worlds")
-    get_all_properties(sub_folders, save_path="all_properties_hdgen_aws.json")
+    sub_folders = get_children(parent="/scratch/hamiri/vanilla-analysis/worlds-revision2")
+    get_all_properties(sub_folders, save_path="all_properties_revision2.json")
 
    
