@@ -18,7 +18,7 @@ if __name__ == "__main__":
         clean_up()
     except:
         pass
-    timestamp = 530000 + get_layer_width()
+    timestamp = 610000 + get_layer_width()
     print(f"Calibration started at {timestamp}...")
     # initialization(timestamp)
     # test()

@@ -10,3 +10,4 @@ stat.json
 worlds
 src/main/python/code/visualization/.mplconfig/*
 .venv/*
+src/main/python/city*

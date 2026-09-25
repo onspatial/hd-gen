@@ -6,7 +6,7 @@ import numpy
 
 EARTH_RADIUS_M = 6371008.8
 
-def get_stat_from_file(path="data/geolife/stat.json"):
+def get_stat_from_file(path="data/geolife/stat.json", which="simple"):
     stat = None
     try:
         if file.exists(path):
@@ -24,6 +24,37 @@ def save_stat_to_file(stat, path="data/geolife/stat.json"):
         print("Error: saving stat to file")
         print(e)
         return None
+
+def get_stat(data, which="simple", **kwargs):
+    if which == "simple":
+        return get_stat_simple(data)
+    else:
+        return get_stat_advanced(data, **kwargs)
+
+def get_stat_simple(data):
+    print("Calculating the calculate_per_day_stat...")
+    per_day_stat = get_per_day_stat_simple(data)
+    print(per_day_stat.head())
+    result = {}
+    result["distance_per_trip"] =  float(per_day_stat['TotalDistance'].sum() / per_day_stat['NumberOfCheckins'].sum())
+    result["average_distance"] = float(per_day_stat['AverageDistance'].mean())
+    result["max_distance"] = float(per_day_stat['MaxDistance'].max())
+    result["median_distance"] = float(per_day_stat['AverageDistance'].median())
+    return result
+
+def get_per_day_stat_simple(data):                                
+    per_day_stat = pandas.DataFrame(columns=['AgentID', 'Date', 'NumberOfCheckins', 'TotalDistance', 'AverageDistance', 'MaxDistance', 'MinDistance'])
+    data['ArrivingTime'] = pandas.to_datetime(data['ArrivingTime'])
+    data['Date'] = data['ArrivingTime'].dt.date
+    data['Distance'] = data['Distance'].astype(int)
+    per_day_stat['AgentID'] = data['AgentID']
+    per_day_stat['Date'] = data['Date']
+    per_day_stat['NumberOfCheckins'] = 1
+    per_day_stat['TotalDistance'] = data['Distance']
+    per_day_stat['AverageDistance'] = data['Distance']
+    per_day_stat['MaxDistance'] = data['Distance']
+    per_day_stat = per_day_stat.groupby(['AgentID', 'Date']).agg({'NumberOfCheckins': 'sum', 'TotalDistance': 'sum', 'AverageDistance': 'mean', 'MaxDistance': 'max'}).reset_index()
+    return per_day_stat
 
 
 
@@ -376,7 +407,7 @@ def get_per_day_stat(data, **kwargs):
     return per_day.drop(columns=["FirstCheckin", "LastCheckin"])
 
 
-def get_stat(
+def get_stat_advanced(
     data,
     reference_stat=None,
     coordinate_decimals=5,

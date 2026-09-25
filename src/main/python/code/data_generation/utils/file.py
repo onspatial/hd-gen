@@ -190,9 +190,9 @@ def get_dir(path):
     path = get_absolute_path(path)
     return os.path.dirname(path)
 
-def get_stat_path(path):
+def get_stat_path(path, which="simple"):
     path = get_absolute_path(path)
-    return os.path.join(get_dir(path), "stat.json")
+    return os.path.join(get_dir(path), f"stat_{which}.json")
 
 def read_json(path):
     path = get_absolute_path(path)
@@ -253,7 +253,7 @@ def get_project_path():
     return project_path
 
 def get_python_path():
-    python_path = f'python3'
+    python_path = f'python'
     return python_path
 
 def delete_file(path, trash=True):
@@ -306,10 +306,27 @@ def add_to_shell(path, output_path="tmp/run.sh", append=True, command=None):
         touch_run_lock = "touch run.lock"
         run_sh = "sh run.sh 2>&1 > run.log.txt"
         touch_run_unlock = "touch run.unlock"
-        python_integrate = f"{get_python_path()} {project_path}/code/integrate.py {log_dir} Checkin {integrated_checkin_path} 2>&1 > integrate.log.txt"
-        python_scorer = f"{get_python_path()} {project_path}/code/scorer.py {integrated_checkin_path} 2>&1 > calculation.log.txt"
+        python_integrate = f"{get_python_path()} {project_path}/code/data_generation/integrate.py {log_dir} Checkin {integrated_checkin_path} 2>&1 > integrate.log.txt"
+        python_scorer = f"{get_python_path()} {project_path}/code/data_generation/scorer.py {integrated_checkin_path} 2>&1 > calculation.log.txt"
+        touch_integrate_done = f"touch integrate.done"
         touch_processed_done = f"touch processed.done"
-        command = f"{cd_dir} && {touch_run_lock} &&  {run_sh} && {touch_run_unlock} && {python_integrate} && {python_scorer} && {touch_processed_done} &"
+        # command = f"{cd_dir} && {touch_run_lock} &&  {run_sh} && {touch_run_unlock} && {python_integrate} && {python_scorer} && {touch_processed_done} &"
+        command = f"""
+        (
+            {cd_dir}
+            if [ ! -f run.unlock ]; then
+                {touch_run_lock} &&
+                {run_sh} &&
+                {touch_run_unlock}
+            fi
+            if [ ! -f integrate.done ]; then
+                {python_integrate} && {touch_integrate_done}
+            fi
+            if [ ! -f processed.done ]; then
+                {python_scorer} && {touch_processed_done}
+            fi
+        ) &
+        """
     
     if append:
         os.system(f"echo '{command}' >> {output_path}")

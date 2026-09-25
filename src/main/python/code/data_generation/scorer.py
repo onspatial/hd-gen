@@ -10,9 +10,9 @@ from utils.score import get_score_from_stat
 import sys
 import os
 
-def get_statistics(checkin_path, dataset_type):
+def get_statistics(checkin_path, dataset_type, which="simple"):
     data = None
-    stat_path = file.get_stat_path(checkin_path)
+    stat_path = file.get_stat_path(checkin_path, which=which)
     statistics = get_stat_from_file(stat_path)
     if statistics:
         return statistics
@@ -24,18 +24,18 @@ def get_statistics(checkin_path, dataset_type):
     else:
         print("Dataset type not supported")
         return
-    statistics = stat.get_stat(data)
+    statistics = stat.get_stat(data, which=which)
     if not file.exists(stat_path):
         save_stat_to_file(statistics, stat_path)
 
     return statistics
 
 
-def get_score(pol_path):
+def get_score(pol_path, which="advanced"):
     log_file = "results_score.log.txt"
     try:
-        geolife_stat = get_statistics(file.get_geolife_path(), "geolife")
-        pol_stat = get_statistics(pol_path, "pol")
+        geolife_stat = get_statistics(file.get_geolife_path(), "geolife", which=which)
+        pol_stat = get_statistics(pol_path, "pol", which=which)
         score, scaled_score = get_score_from_stat(geolife_stat, pol_stat, normalize=geolife_stat)
         file.log_print(f"{pol_path} : {(score, scaled_score)}", log_file)
         

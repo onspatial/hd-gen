@@ -293,13 +293,13 @@ def check_min_max(param):
     return param
 
 def get_min_param_from_file():
-    return file.read_json("code/utils/constants/json/param.min.json")
+    return file.read_json("code/data_generation/utils/constants/json/param.min.json")
 
 def get_max_param_from_file():
-    return file.read_json("code/utils/constants/json/param.max.json")
+    return file.read_json("code/data_generation/utils/constants/json/param.max.json")
 
 def get_sample_param_from_file():
-    return file.read_json("code/utils/constants/json/param.sample.json")
+    return file.read_json("code/data_generation/utils/constants/json/param.sample.json")
 
 def get_sample_param():
     param_sample = get_sample_param_from_file()

@@ -11,7 +11,7 @@ def get_pool_size():
     return pool_size
 
 def get_layer_width():
-    layer_width = 128
+    layer_width = 64
     return layer_width
 
 def get_num_of_each_params_type():
@@ -26,7 +26,7 @@ def get_end_time(type="final"):
         end_time = 100
     return end_time
 def get_weak_score(counter=1):
-    perfect_score = 0.98
+    perfect_score = 0.90
     worst_score = 0.01
     smoothness = 0.01
     weak_score = worst_score + (counter * smoothness)
