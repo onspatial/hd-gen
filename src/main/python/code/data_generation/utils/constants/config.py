@@ -11,7 +11,7 @@ def get_pool_size():
     return pool_size
 
 def get_layer_width():
-    layer_width = 64
+    layer_width = 32
     return layer_width
 
 def get_num_of_each_params_type():

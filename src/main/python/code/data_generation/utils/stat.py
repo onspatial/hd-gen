@@ -6,7 +6,8 @@ import numpy
 
 EARTH_RADIUS_M = 6371008.8
 
-def get_stat_from_file(path="data/geolife/stat.json", which="simple"):
+def get_stat_from_file(path="data/geolife/stat.json"):
+    print(f"Looking for stat file at {path}")
     stat = None
     try:
         if file.exists(path):

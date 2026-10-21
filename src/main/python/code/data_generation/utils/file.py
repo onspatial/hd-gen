@@ -190,7 +190,7 @@ def get_dir(path):
     path = get_absolute_path(path)
     return os.path.dirname(path)
 
-def get_stat_path(path, which="simple"):
+def get_stat_path(path, which="advanced"):
     path = get_absolute_path(path)
     return os.path.join(get_dir(path), f"stat_{which}.json")
 
