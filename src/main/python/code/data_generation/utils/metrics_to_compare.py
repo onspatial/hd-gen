@@ -381,15 +381,7 @@ all_metrics= ['basic_n_agents',
 'max_distance', 
 'median_distance']
 
-selected_metrics  = [
-    'distance_per_trip_distance_m_median',
-    'distance_per_agent_day_total_distance_m_median',
-    'visitation_trips_per_agent_day_median',
-    'visitation_number_locations_visited_Nl_per_agent_day_median',
-    'visitation_home_visit_share_median',
-    'spatial_exploration_radius_of_gyration_Rg_m_median',
-    'spatial_exploration_normalized_location_entropy_per_agent_median',
-    'spatial_exploration_top1_location_share_per_agent_median',
+fixed_metrics = [
     'temporal_hourly_checkin_distribution_0', 
     'temporal_hourly_checkin_distribution_1', 
     'temporal_hourly_checkin_distribution_2', 
@@ -414,5 +406,15 @@ selected_metrics  = [
     'temporal_hourly_checkin_distribution_21', 
     'temporal_hourly_checkin_distribution_22', 
     'temporal_hourly_checkin_distribution_23', 
+]
+selected_metrics  = [
+    'visitation_home_visit_share_median',
+    'spatial_exploration_top1_location_share_per_agent_median',
+    'distance_per_trip_distance_m_median',
+    'distance_per_agent_day_total_distance_m_median',
+    'spatial_exploration_radius_of_gyration_Rg_m_median',
+    'spatial_exploration_normalized_location_entropy_per_agent_median',
+    'visitation_trips_per_agent_day_median',
+    'visitation_number_locations_visited_Nl_per_agent_day_median',
     'temporal_weekend_checkin_share',
 ]

@@ -36,6 +36,12 @@ def print_nothing(*args, **kwargs):
         print_time(*args, **kwargs)
 
 
+
+def original_print(*args, **kwargs):
+    silence = kwargs.pop('silence', False)
+    no_log = kwargs.pop('no_log', False)
+    _original_print(*args, **kwargs)
+
 def enable_timestamped_print():
     builtins.print = print_time
 
@@ -54,6 +60,9 @@ def enable_silence():
     warnings.simplefilter("ignore")
     builtins.print = print_nothing
 
+
+def disable_silence():
+    builtins.print = original_print
 
 if __name__ == "__main__":
     enable_timestamped_print()

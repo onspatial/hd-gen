@@ -5,7 +5,6 @@ import utils.geolife as geolife
 import utils.pol as pol
 import utils.stat as stat
 import utils.file as file
-import utils.stdout as stdout
 import utils.metrics_to_compare as mtc
 from utils.stat import save_stat_to_file, get_stat_from_file
 from utils.score import get_score_from_stat
@@ -13,6 +12,7 @@ from pathlib import Path
 
 import sys
 import os
+import utils.stdout as stdout
 stdout.enable_silence()
 
 def find_checkins(city="/home/amiri/onone/onnuc/Research/hd-gen/github/src/main/python/city"):
@@ -73,44 +73,51 @@ def get_selected_metrics(all_metrics, output_size, sample_size):
    selected_metrics = list(set(tuple(x) for x in selected_metrics))
    print(f"Selected metrics after removing duplicates: {len(selected_metrics)}", silence=False, no_log=False)
    selected_metrics.sort()
-   return selected_metrics
+   return list(selected_metrics)
 
 if __name__ == "__main__":
     paths = find_checkins()
+    print(f"Found {len(paths)} checkin paths.", silence=False, no_log=False)
     
     all_metrics = mtc.selected_metrics
     sample_sizes = [len(all_metrics), len(all_metrics)-1, len(all_metrics)-2, len(all_metrics)-3, len(all_metrics)-4, len(all_metrics)-5]
-    score_threshold = 0.1
+    score_threshold = 0.5
     results = {}
-
+    print(f"Starting evaluation with sample sizes: {sample_sizes}", silence=False, no_log=False)
     for sample_size in sample_sizes:
         selected_metrics = get_selected_metrics(all_metrics,1000, sample_size)
         for idx, metrics in enumerate(selected_metrics):
-            res_id = f"i_{sample_size}_{idx}"
-            print(f"Processing metrics set {idx}: {metrics}")
-        
-            if f"{res_id}" not in results:
-                results[f"{res_id}"] = {}
-            results[f"{res_id}"]["metrics"] = metrics
-            scores = []
-            for path in paths:
-                print(f"Processing {path} with metrics {metrics}")
-                score = get_score(path, selected_metrics=metrics,score_threshold=score_threshold)
-                scores.append(score)
-            if numpy.max(scores) <= score_threshold:
-                print(f"Warning: Max score {numpy.max(scores)} not reached for metrics set {idx}.")
-                results[f"{res_id}"]["scores"] = "NP"
-            else:
-                print("-------------------------------------------------")
-                print(f"Max score reached for metrics {idx} with sample size {sample_size}: {numpy.max(scores)}",silence=False, no_log=False)
-                print(f"Metrics: {metrics}",silence=False, no_log=False)
-                print("-------------------------------------------------")
-                results[f"{res_id}"]["scores"] = scores
 
-    # print not NP results
+            try:
+                metrics = list(metrics)
+                metrics = metrics + mtc.fixed_metrics
+                metrics = list(set(metrics))
+                metrics.sort()
+                res_id = f"i_{sample_size}_{idx}"
+            
+                if f"{res_id}" not in results:
+                    results[f"{res_id}"] = {}
+                results[f"{res_id}"]["metrics"] = metrics
+                scores = {}
+                for path in paths:
+                    score = get_score(path, selected_metrics=metrics,score_threshold=score_threshold)
+                    scores[path] = score
+                if numpy.max(list(scores.values())) <= score_threshold:
+                    print(f"Warning: Max score {numpy.max(list(scores.values()))} not reached for metrics set {idx}.")
+                    results[f"{res_id}"]["scores"] = "NP"
+                else:
+                    print("-------------------------------------------------")
+                    print(f"Max score reached for metrics {idx} with sample size {sample_size}: {numpy.max(list(scores.values()))}",silence=False, no_log=False)
+                    print(f"Metrics: {metrics}")
+                    print("-------------------------------------------------")
+                    results[f"{res_id}"]["scores"] = scores
+            except Exception as e:
+                print(f"Error processing metrics set {idx}: {e}",silence=False, no_log=False)
+
+    print("Final results:", silence=False, no_log=False)
     for key, value in results.items():
-        if value["scores"] != "NP":
+        if 'scores' in value and value['scores'] != "NP":
             print(f"{key}: {value['metrics']}",silence=False, no_log=False)
-            print(f"{key}: max score {numpy.max(value['scores'])}",silence=False, no_log=False)
+            print(f"{key}: max score {numpy.max(list(value['scores'].values()))}, at path {max(value['scores'], key=value['scores'].get)}",silence=False, no_log=False)
             print("--------------------------------------",silence=False, no_log=False)
     

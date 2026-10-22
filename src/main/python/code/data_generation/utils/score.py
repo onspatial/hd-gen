@@ -42,6 +42,7 @@ def get_score_from_stat (stat1, stat2, normalize=None,selected_metrics=[]):
     # print("Diff: ", diff)
     score = float(sum(diff.values()) / len(diff))
     scaled_score =  normalization - score/normalization
+    print("Score: ", score, "Scaled Score: ", scaled_score)
     return score, scaled_score
 
 def flatten_dict(d, parent_key="", sep="_"):
