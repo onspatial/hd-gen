@@ -12,3 +12,4 @@ src/main/python/code/visualization/.mplconfig/*
 .venv/*
 src/main/python/city*
 src/main/python/results_score.log.old.txt
+results*
